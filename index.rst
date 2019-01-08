@@ -10,6 +10,159 @@ Welcome to Bittmax's documentation!
 .. toctree::
    :maxdepth: 2
 
+**********
+Web Server
+**********
+
+You need to generate your API credentials before placing orders on Bittmax Servers, Please follow the following steps to do that.
+Generating credentials
+
+.. _api_credentials:
+
+====================
+Generate Credentials
+====================
+1. Go to bittmax.live and login.
+2. On the top right corner, Where it displays your name, Select the dropdown and click settings.
+3. On the settings page, Go to API credentials.
+4. Click "Generate".
+5. Note down the Client key and Secret somewhere safe, As it will only be displayed once.
+
+.. _place_order:
+
+=============
+Placing order
+=============
+1. Create the order request with intended parameters, This will be the body of your HTTP request. Below are the details of each supported parameter.
+
+   Order Structure::
+
+      {
+          "qty" : "0.0001",
+          "price" : "100",
+          "side" : "BUY", //Valid options are "BUY" and "SELL"
+          "symbol" : "BTC-INR", Complete list of supported products can be requested from https://bittmax.live/api/clientConfig/ under products key
+          "type" : "LIMIT", // Supported parameters are "LIMIT" and "STOP LIMIT"
+          "triggerPrice" : "78.99" // Only applicable if type is "STOP LIMIT",
+          "validity": "GOOD TILL CANCEL", Supported parameters are "GOOD TILL CANCEL", "IMMEDIATE OR CANCEL" and "FILL OR KILL",
+          "timestamp": 1538046192974 //Current time in milliseconds
+      }
+
+2. Sign your order request using sha256 and your client secret. Set the hex value of your signature in HTTP header "X-API-SIGNATURE"
+
+3. Set your API key in HTTP header "X-API-KEY"
+
+4. Place the request on URL https://bittmax.live/api/api-client/order
+
+   Sample NodeJS program::
+
+       var crypto = require('crypto');
+       let time = new Date().getTime();
+       var order = {
+         "symbol": "BTC-INR",
+         "qty": "1",
+         "price": "806",
+         "side": "BUY",
+         "type": "LIMIT",
+         "triggerPrice": "",
+         "validity": "GOOD TILL CANCEL",
+         "timestamp": time
+       };
+       const CLIENT_KEY = "a385061780f7c9da5f1d1ad53ac644e7";
+       const CLIENT_SECRET = "b9a03c3c32de9f2691a6309ba77a5a189b6720ff3a9c2b23e0af0ad7384438ec";
+
+       var sign = crypto.createHmac('sha256', CLIENT_SECRET).update(JSON.stringify(order)).digest(
+         'hex')
+
+       var request = require("request");
+
+       var options = {
+         url: 'https://bittmax.live/api/api-client/order',
+         headers: {
+           'X-API-KEY': CLIENT_KEY,
+           'X-API-SIGNATURE': sign
+         },
+         method: 'post',
+         json: true,
+         body: order
+       };
+
+       request(options, (error, res, body) => {
+         if (error) {
+           console.warn(error);
+         }
+         console.log(body);
+       })
+
+============
+Cancel Order
+============
+
+Follow the same steps as :ref:`place_order`, But alter the body with following parameters
+
+Cancel Order Structure::
+
+   {
+     "orderId": "26001", //Order id to cance
+     "symbol": "SIA-BTC", // Symbol
+     "timestamp": time
+   }
+
+===========
+Client Data
+===========
+
+1. You can fetch client data, [funds, orders, trades, deposits, withdrawals] using our API.
+2. These APIs use GET HTTP method
+3. You can use query params in URL, timestamp is a required parameter to prevent replay attacks.
+4. Similar to POST APIs, GET APIs of Bittmax also require signature, But the steps vary.
+5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://bittmax.live/api/api-client/trades?timestamp=12313443&page=0&symbol=SIA-BTC" "https://bittmax.live/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=SIA-BTC" is the API URL.
+6. List of supported APIs is as below
+ * https://bittmax.live/api/api-client/orders/
+ * https://bittmax.live/api/api-client/trades/
+ * https://bittmax.live/api/api-client/funds
+ * https://bittmax.live/api/api-client/deposits
+ * https://bittmax.live/api/api-client/withdrawals
+
+Please note that orders and trades API also support filteration on "symbol" and also supports pagination too (page=0 and so on)
+
+Sample NodeJS program::
+
+   var crypto = require('crypto');
+   let time = new Date().getTime();
+
+   const CLIENT_KEY = "a64cdc31716649d4c8fd79b89ab965d8";
+   const CLIENT_SECRET = "d37e9c4f137601f2c59b796a033a99a35e20a6757e754f30d00cff9c438b0cac";
+
+   let baseURL = "http://localhost:7001/api-client"
+   let apiURL = `/trades?timestamp=${time}&page=0&symbol=SIA-BTC`;
+   let reqURl = `${baseURL}${apiURL}`;
+
+   var sign = crypto.createHmac('sha256', CLIENT_SECRET).update(apiURL).digest(
+     'hex')
+
+   console.log(sign);
+
+   var request = require("request");
+
+   var options = {
+     url: reqURl,
+     headers: {
+       'X-API-KEY': CLIENT_KEY,
+       'X-API-SIGNATURE': sign
+     },
+     method: 'get',
+     json: true
+   };
+
+   request(options, (error, res, body) => {
+     if (error) {
+       console.warn(error);
+     }
+     console.log(body);
+   })
+
+
 *********
 WebSocket
 *********
@@ -18,9 +171,12 @@ You can connect to our WebSocket to get updates on your orders and receive marke
 
 To connect with WebSocket send the following request::
 
-   GET wss://bittmax.live/ws
+   GET wss://bittmax.live/wsX-API-KEY={API_KEY}&timestamp=1544020774432&X-API-SIGNATURE={SIGNATURE}
    Connection: Upgrade
    Upgrade: websocket
+
+.. note:: API_KEY can be obtained by :ref:`api_credentials` and SIGNATURE is the hex value of sha256 of API key + timestamp and Client Secret
+
 
 =============
 Subscriptions
