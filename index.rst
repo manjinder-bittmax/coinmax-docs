@@ -1,10 +1,10 @@
-.. Bittmax documentation master file, created by
+.. Coinmax documentation master file, created by
    sphinx-quickstart on Mon Sep 24 15:24:57 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 ###################################
-Welcome to Bittmax's documentation!
+Welcome to Coinmax's documentation!
 ###################################
 
 .. toctree::
@@ -15,7 +15,7 @@ Welcome to Bittmax's documentation!
 Web Server documentation
 **********
 
-You need to generate your API credentials before placing orders on Bittmax Servers, Please follow the following steps to do that.
+You need to generate your API credentials before placing orders on Coinmax Servers, Please follow the following steps to do that.
 Generating credentials
 
 .. _api_credentials:
@@ -23,7 +23,7 @@ Generating credentials
 ====================
 Generate Credentials
 ====================
-1. Go to bittmax.live and login.
+1. Go to coinmax.com.au and login.
 2. On the top right corner, Where it displays your name, Select the dropdown and click settings.
 3. On the settings page, Go to API credentials.
 4. Click "Generate".
@@ -42,7 +42,7 @@ Placing order
           "qty" : "0.0001",
           "price" : "100",
           "side" : "BUY", //Valid options are "BUY" and "SELL"
-          "symbol" : "BTC-INR", Complete list of supported products can be requested from https://bittmax.live/api/clientConfig/ under products key
+          "symbol" : "BTC-INR", Complete list of supported products can be requested from https://coinmax.com.au/api/clientConfig/ under products key
           "type" : "LIMIT", // Supported parameters are "LIMIT" and "STOP LIMIT"
           "triggerPrice" : "78.99" // Only applicable if type is "STOP LIMIT",
           "validity": "GOOD TILL CANCEL", Supported parameters are "GOOD TILL CANCEL", "IMMEDIATE OR CANCEL" and "FILL OR KILL",
@@ -53,7 +53,7 @@ Placing order
 
 3. Set your API key in HTTP header "X-API-KEY"
 
-4. Place the request on URL https://bittmax.live/api/api-client/order
+4. Place the request on URL https://coinmax.com.au/api/api-client/order
 
    Sample NodeJS program::
 
@@ -78,7 +78,7 @@ Placing order
        var request = require("request");
 
        var options = {
-         url: 'https://bittmax.live/api/api-client/order',
+         url: 'https://coinmax.com.au/api/api-client/order',
          headers: {
            'X-API-KEY': CLIENT_KEY,
            'X-API-SIGNATURE': sign
@@ -116,14 +116,14 @@ Client Data
 1. You can fetch client data, [funds, orders, trades, deposits, withdrawals] using our API.
 2. These APIs use GET HTTP method
 3. You can use query params in URL, timestamp is a required parameter to prevent replay attacks.
-4. Similar to POST APIs, GET APIs of Bittmax also require signature, But the steps vary.
-5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://bittmax.live/api/api-client/trades?timestamp=12313443&page=0&symbol=SIA-BTC" "https://bittmax.live/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=SIA-BTC" is the API URL.
+4. Similar to POST APIs, GET APIs of Coinmax also require signature, But the steps vary.
+5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://coinmax.com.au/api/api-client/trades?timestamp=12313443&page=0&symbol=SIA-BTC" "https://coinmax.com.au/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=SIA-BTC" is the API URL.
 6. List of supported APIs is as below
- * https://bittmax.live/api/api-client/orders/
- * https://bittmax.live/api/api-client/trades/
- * https://bittmax.live/api/api-client/funds
- * https://bittmax.live/api/api-client/deposits
- * https://bittmax.live/api/api-client/withdrawals
+ * https://coinmax.com.au/api/api-client/orders/
+ * https://coinmax.com.au/api/api-client/trades/
+ * https://coinmax.com.au/api/api-client/funds
+ * https://coinmax.com.au/api/api-client/deposits
+ * https://coinmax.com.au/api/api-client/withdrawals
 
 Please note that orders and trades API also support filteration on "symbol" and also supports pagination too (page=0 and so on)
 
@@ -172,7 +172,7 @@ You can connect to our WebSocket to get updates on your orders and receive marke
 
 To connect with WebSocket send the following request::
 
-   GET wss://bittmax.live/wsX-API-KEY={API_KEY}&timestamp=1544020774432&X-API-SIGNATURE={SIGNATURE}
+   GET wss://coinmax.com.au/wsX-API-KEY={API_KEY}&timestamp=1544020774432&X-API-SIGNATURE={SIGNATURE}
    Connection: Upgrade
    Upgrade: websocket
 
