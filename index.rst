@@ -42,7 +42,7 @@ Placing order
           "qty" : "0.0001",
           "price" : "100",
           "side" : "BUY", //Valid options are "BUY" and "SELL"
-          "symbol" : "BTC-INR", Complete list of supported products can be requested from https://coinmax.com.au/api/clientConfig/ under products key
+          "symbol" : "BTC-AUD", Complete list of supported products can be requested from https://coinmax.com.au/api/clientConfig/ under products key
           "type" : "LIMIT", // Supported parameters are "LIMIT" and "STOP LIMIT"
           "triggerPrice" : "78.99" // Only applicable if type is "STOP LIMIT",
           "validity": "GOOD TILL CANCEL", Supported parameters are "GOOD TILL CANCEL", "IMMEDIATE OR CANCEL" and "FILL OR KILL",
@@ -60,7 +60,7 @@ Placing order
        var crypto = require('crypto');
        let time = new Date().getTime();
        var order = {
-         "symbol": "BTC-INR",
+         "symbol": "BTC-AUD",
          "qty": "1",
          "price": "806",
          "side": "BUY",
@@ -105,7 +105,7 @@ Cancel Order Structure::
 
    {
      "orderId": "26001", //Order id to cance
-     "symbol": "SIA-BTC", // Symbol
+     "symbol": "ETH-AUD", // Symbol
      "timestamp": time
    }
 
@@ -117,7 +117,7 @@ Client Data
 2. These APIs use GET HTTP method
 3. You can use query params in URL, timestamp is a required parameter to prevent replay attacks.
 4. Similar to POST APIs, GET APIs of Coinmax also require signature, But the steps vary.
-5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://coinmax.com.au/api/api-client/trades?timestamp=12313443&page=0&symbol=SIA-BTC" "https://coinmax.com.au/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=SIA-BTC" is the API URL.
+5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://coinmax.com.au/api/api-client/trades?timestamp=12313443&page=0&symbol=ETH-AUD" "https://coinmax.com.au/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=ETH-AUD" is the API URL.
 6. List of supported APIs is as below
  * https://coinmax.com.au/api/api-client/orders/
  * https://coinmax.com.au/api/api-client/trades/
@@ -136,7 +136,7 @@ Sample NodeJS program::
    const CLIENT_SECRET = "d37e9c4f137601f2c59b796a033a99a35e20a6757e754f30d00cff9c438b0cac";
 
    let baseURL = "http://localhost:7001/api-client"
-   let apiURL = `/trades?timestamp=${time}&page=0&symbol=SIA-BTC`;
+   let apiURL = `/trades?timestamp=${time}&page=0&symbol=ETH-AUD`;
    let reqURl = `${baseURL}${apiURL}`;
 
    var sign = crypto.createHmac('sha256', CLIENT_SECRET).update(apiURL).digest(
@@ -193,15 +193,15 @@ Subscriptions request format::
       "action": "subscribe",
       "channels": [{
          "name": "ohlc",
-         "productIds": ["BTC-GUSD"]
+         "productIds": ["ETH-AUD"]
       },
       {
          "name": "trades"
       }],
-      "productIds": ["ETH-GUSD"]
+      "productIds": ["ZEC-AUD"]
    }
 
-.. attention:: In the above structure, ohlc channel will subscribe to BTC-GUSD and ETH-GUSD both, whereas trades will only subscribe to ETH-GUSD
+.. attention:: In the above structure, ohlc channel will subscribe to ETH-AUD and ZEC-AUD both, whereas trades will only subscribe to ZEC-AUD
 
 Subscriptions reply format::
 
@@ -211,11 +211,11 @@ Subscriptions reply format::
       "subscriptions": [
          {
             "name": "ohlc",
-            "productIds": ["BTC-GUSD", "ETH-GUSD"]
+            "productIds": ["ETH-AUD", "ZEC-AUD"]
          },
          {
             "name": "trades",
-            "productIds": ["ETH-GUSD"]
+            "productIds": ["ZEC-AUD"]
          }
       ]
    }
@@ -300,8 +300,8 @@ Supported Product Ids
    :header-rows: 1
 
    * - Product Id
-   * - BTC-GUSD
-   * - ETH-GUSD
+   * - ETH-AUD
+   * - ZEC-AUD
 
 
 .. _ws-registration:
