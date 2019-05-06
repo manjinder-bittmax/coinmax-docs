@@ -4,37 +4,36 @@
    contain the root `toctree` directive.
 
 ###################################
-Welcome to Coinmax's documentation!
+Coinmax API Documentation
 ###################################
 
 .. toctree::
    :maxdepth: 2
 
-
-**********
-Web Server documentation
-**********
-
-You need to generate your API credentials before placing orders on Coinmax Servers, Please follow the following steps to do that.
-Generating credentials
-
 .. _api_credentials:
+
+
+*******************
+Rest API
+*******************
+You need to generate your API credentials before placing orders via API. Please follow the following steps for the same.
 
 ====================
 Generate Credentials
 ====================
-1. Go to coinmax.com.au and login.
-2. On the top right corner, Where it displays your name, Select the dropdown and click settings.
-3. On the settings page, Go to API credentials.
-4. Click "Generate".
-5. Note down the Client key and Secret somewhere safe, As it will only be displayed once.
+
+1. Go to coinmax.com.au and login. If you don't have an account, please sign up.
+2. Once you log in, on the top right corner, click on the the dropdown and click "Settings".
+3. On the Settings page, go to "API Credentials".
+4. Click “Generate”.
+5. Note down the Client Key and Secret somewhere safe, as it will only be displayed once.
 
 .. _place_order:
 
 =============
-Placing order
+Placing Order
 =============
-1. Create the order request with intended parameters, This will be the body of your HTTP request. Below are the details of each supported parameter.
+1. Create the order request with intended parameters. This will be the body of your HTTP request. Below are the details of each supported parameter.
 
    Order Structure::
 
@@ -49,9 +48,9 @@ Placing order
           "timestamp": 1538046192974 //Current time in milliseconds
       }
 
-2. Sign your order request using sha256 and your client secret. Set the hex value of your signature in HTTP header "X-API-SIGNATURE"
+2. Sign your order request using sha256 and your client secret. Set the hex value of your signature in HTTP header "X-API-SIGNATURE".
 
-3. Set your API key in HTTP header "X-API-KEY"
+3. Set your API key in HTTP header "X-API-KEY".
 
 4. Place the request on URL https://coinmax.com.au/api/api-client/order
 
@@ -99,12 +98,12 @@ Placing order
 Cancel Order
 ============
 
-Follow the same steps as :ref:`place_order`, But alter the body with following parameters
+Follow the same steps as :ref:`place_order`, but alter the body with following parameters:
 
 Cancel Order Structure::
 
    {
-     "orderId": "26001", //Order id to cance
+     "orderId": "26001", //Order id to cancel
      "symbol": "ETH-AUD", // Symbol
      "timestamp": time
    }
@@ -116,7 +115,7 @@ Client Data
 1. You can fetch client data, [funds, orders, trades, deposits, withdrawals] using our API.
 2. These APIs use GET HTTP method
 3. You can use query params in URL, timestamp is a required parameter to prevent replay attacks.
-4. Similar to POST APIs, GET APIs of Coinmax also require signature, But the steps vary.
+4. Similar to POST APIs, GET APIs of Coinmax also require signature, but the steps vary.
 5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://coinmax.com.au/api/api-client/trades?timestamp=12313443&page=0&symbol=ETH-AUD" "https://coinmax.com.au/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=ETH-AUD" is the API URL.
 6. List of supported APIs is as below
  * https://coinmax.com.au/api/api-client/orders/
@@ -183,7 +182,7 @@ To connect with WebSocket send the following request::
 Subscriptions
 =============
 
-Once you are connected, You will need to subscribe to the events published by WebSocket.
+Once you are connected, you will need to subscribe to the events published by WebSocket.
 
 .. note:: All communications with WebSocket are in JSON format.
 
@@ -201,7 +200,7 @@ Subscriptions request format::
       "productIds": ["ZEC-AUD"]
    }
 
-.. attention:: In the above structure, ohlc channel will subscribe to ETH-AUD and ZEC-AUD both, whereas trades will only subscribe to ZEC-AUD
+.. attention:: In the above structure, ```ohlc``` channel will subscribe to ETH-AUD and ZEC-AUD both, whereas trades will only subscribe to ZEC-AUD
 
 Subscriptions reply format::
 
@@ -224,7 +223,7 @@ Subscriptions reply format::
 
 **Subscribe to events**
 
-   To Subscibe to an event, Send a message to WebSocket with ``action: subscribe`` and the channel and product id you want to subscribe for.
+   To Subscibe to an event, send a message to WebSocket with ``action: subscribe`` and the channel and product id you want to subscribe for.
    A complete list of :ref:`market_channels`, :ref:`authorized_channels` and :ref:`supported_product_ids` is listed below.
 
 **Unsubscribe from events**
@@ -595,4 +594,16 @@ Asset Withdrawal
 **********
 Disclaimer
 **********
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+Please note that this is a beta version of the Coinmax API. The
+API is provided on an
+“as is” and “as available” basis. Coinmax does not give any warranties,
+whether express or implied, as to the suitability or usability of the
+API, its software or any of its content. Coinmax will not be liable for any loss, whether such loss is direct,
+indirect, special or consequential, suffered by any party as a result
+of their use of the Coinmax API. Any use of the API is done at the
+user’s own risk and the user will be solely responsible for any
+damage to any computer system or loss of data that results from such
+activities. Should you encounter any bugs, glitches, lack of functionality or
+other problems on the website, please let us know immediately so we
+can rectify these accordingly. Your help in this regard is greatly
+appreciated.
