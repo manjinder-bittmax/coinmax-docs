@@ -56,9 +56,9 @@ Placing Order
 
    Sample NodeJS program::
 
-       var crypto = require('crypto');
+       const crypto = require('crypto');
        let time = new Date().getTime();
-       var order = {
+       const order = {
          "symbol": "BTC-AUD",
          "qty": "1",
          "price": "806",
@@ -128,7 +128,7 @@ Please note that orders and trades API also support filteration on "symbol" and 
 
 Sample NodeJS program::
 
-   var crypto = require('crypto');
+   const crypto = require('crypto');
    let time = new Date().getTime();
 
    const CLIENT_KEY = "a64cdc31716649d4c8fd79b89ab965d8";
@@ -171,12 +171,42 @@ You can connect to our WebSocket to get updates on your orders and receive marke
 
 To connect with WebSocket send the following request::
 
-   GET wss://coinmax.com.au/wsX-API-KEY={API_KEY}&timestamp=1544020774432&X-API-SIGNATURE={SIGNATURE}
+   GET wss://coinmax.com.au/ws?X-API-KEY={API_KEY}&timestamp=1544020774432&X-API-SIGNATURE={SIGNATURE}
    Connection: Upgrade
    Upgrade: websocket
 
-.. note:: API_KEY can be obtained by :ref:`api_credentials` and SIGNATURE is the hex value of sha256 of API key + timestamp and Client Secret
+.. note:: API_KEY can be obtained by :ref:`api_credentials` and SIGNATURE is the hex value of sha256 of ``API key + timestamp`` with Client Secret
 
+Sample NodeJS program::
+
+    var ws = require('ws');
+    var crypto = require('crypto');
+    let time = new Date().getTime();
+
+    const CLIENT_KEY = "dec5b6dad847f157a51735d34fd09e79";
+    const CLIENT_SECRET = "1f9bcfaa4542676463f953224fdbf779e92fbc9898aa56146797a152097182fd";
+
+    var sign = crypto.createHmac('sha256', CLIENT_SECRET).update(CLIENT_KEY + time).digest(
+          'hex')
+
+    const coinmaxWebsocket = new ws(`wss://sandbox.coinmax.com.au/ws?X-API-KEY=${CLIENT_KEY}&timestamp=${time}&X-API-SIGNATURE=${sign}`);
+    coinmaxWebsocket.on('open', function open() {
+          coinmaxWebsocket.send(JSON.stringify({
+                  "action": "subscribe",
+                  "channels": [{
+                          "name": "ohlc",
+                          "productIds": ["ETH-AUD"]
+                  },
+                  {
+                          "name": "trades"
+                  }],
+                  "productIds": ["ZEC-AUD"]
+          }));
+    });
+
+    coinmaxWebsocket.on('message', function incoming(data) {
+          console.log(data);
+    });
 
 =============
 Subscriptions
