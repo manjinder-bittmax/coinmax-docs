@@ -189,7 +189,7 @@ Sample NodeJS program::
     var sign = crypto.createHmac('sha256', CLIENT_SECRET).update(CLIENT_KEY + time).digest(
           'hex')
 
-    const coinmaxWebsocket = new ws(`wss://sandbox.coinmax.com.au/ws?X-API-KEY=${CLIENT_KEY}&timestamp=${time}&X-API-SIGNATURE=${sign}`);
+    const coinmaxWebsocket = new ws(`wss://coinmax.com.au/ws?X-API-KEY=${CLIENT_KEY}&timestamp=${time}&X-API-SIGNATURE=${sign}`);
     coinmaxWebsocket.on('open', function open() {
           coinmaxWebsocket.send(JSON.stringify({
                   "action": "subscribe",
