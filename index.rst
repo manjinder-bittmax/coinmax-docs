@@ -200,7 +200,7 @@ Subscriptions request format::
       "productIds": ["ZEC-AUD"]
    }
 
-.. attention:: In the above structure, ```ohlc``` channel will subscribe to ETH-AUD and ZEC-AUD both, whereas trades will only subscribe to ZEC-AUD
+.. attention:: In the above structure, ``ohlc`` channel will subscribe to ETH-AUD and ZEC-AUD both, whereas trades will only subscribe to ZEC-AUD
 
 Subscriptions reply format::
 
