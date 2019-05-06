@@ -134,7 +134,7 @@ Sample NodeJS program::
    const CLIENT_KEY = "a64cdc31716649d4c8fd79b89ab965d8";
    const CLIENT_SECRET = "d37e9c4f137601f2c59b796a033a99a35e20a6757e754f30d00cff9c438b0cac";
 
-   let baseURL = "http://localhost:7001/api-client"
+   let baseURL = "https://coinmax.com.au/api/api-client"
    let apiURL = `/trades?timestamp=${time}&page=0&symbol=ETH-AUD`;
    let reqURl = `${baseURL}${apiURL}`;
 
