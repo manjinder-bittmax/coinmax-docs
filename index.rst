@@ -621,6 +621,13 @@ Asset Withdrawal
 
 .. note:: Use the ``ReferenceId`` to uniquely identify withdrawal request.
 
+
+**********
+Fees
+**********
+We calculate fees as a fraction of the notional value of each trade (i.e., price × amount). Any fees will be applied at the time an order is placed. For partially filled orders, only the executed portion is subject to trading fees.
+Fees we charge for Maker trades is 0.10% while those for Taker trades is 0.15%. If any other users have joined by using your referral link, you gain 0.10% of the fees that we charge them on their trades. 
+
 **********
 Disclaimer
 **********
