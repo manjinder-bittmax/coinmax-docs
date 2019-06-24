@@ -301,9 +301,9 @@ GET **/api/client/orders**
     * - symbol
       - Asset pair e.g. BTC-AUD (Required)
     * - pageSize
-      - Number of orders to return
+      - Number of orders to return, default value is 50
     * - page
-      - Directly jump to a particular page number by skipping previous records
+      - Directly jump to a particular page number by skipping previous records, default value is 0
 
 Sample Response::
 
@@ -350,9 +350,9 @@ GET **/api/client/trades**
     * - symbol
       - Asset pair e.g. BTC-AUD (Required)
     * - pageSize
-      - Number of trades to return
+      - Number of trades to return, default value is 50
     * - page
-      - Directly jump to a particular page number by skipping previous records
+      - Directly jump to a particular page number by skipping previous records, default value is 0
 
 Sample Response::
 
@@ -465,9 +465,9 @@ GET **/api/client/deposits**
     * - timestamp
       - Current timestamp in milliseconds (Required)
     * - pageSize
-      - Number of trades to return
+      - Number of trades to return, default value is 50
     * - page
-      - Directly jump to a particular page number by skipping previous records
+      - Directly jump to a particular page number by skipping previous records, default value is 0
 
 Sample Response::
 
@@ -519,9 +519,9 @@ GET **/api/client/withdrawals**
     * - timestamp
       - Current timestamp in milliseconds (Required)
     * - pageSize
-      - Number of trades to return
+      - Number of trades to return, default value is 50
     * - page
-      - Directly jump to a particular page number by skipping previous records
+      - Directly jump to a particular page number by skipping previous records, default value is 0
 
 Sample Response::
 
@@ -728,8 +728,11 @@ Market Data Channels
       * - 24H Changes
         - ticker
         - \* *Asterisk*
-      * - Market trades
+      * - Real time market trades
         - tradeQuote
+        - All supported IDs
+      * - Market trades historical data
+        - tradeQuoteBatch
         - All supported IDs
       * - Depth Snapshot
         - quoteFullSnapshot
@@ -958,6 +961,8 @@ Order Update
          "LastFillPrice": string,
          "Timestamp": string,
          "Commission": string,
+         "ClientOrderId": string,
+	       "SeqNo": uint32,
          "Error": string
      }
 
