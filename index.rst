@@ -26,13 +26,17 @@ Our API follows typical HTTP status codes for success and failure. Below is a ta
     * - 200
       - Your request is accepted and body will have data if any
     * - 400
-      - Invalid request 
+      - Invalid request
     * - 403
       - Unauthorized request
     * - 429
       - API rate limit reached
     * - 500
       - Internal error
+
+|
+
+**Base URL** /api/
 
 |
 
@@ -95,7 +99,7 @@ Get a list of available asset pairs for trading.
 
 HTTP REQUEST:
 
-GET **/public/products**
+GET **/api/public/products**
 
 Sample Response::
 
@@ -138,7 +142,7 @@ Get list of supported assets.
 .. note:: Not all assets may be currently in use for trading.
 HTTP REQUEST:
 
-GET **/public/assets**
+GET **/api/public/assets**
 
 Sample Response::
 
@@ -276,7 +280,7 @@ Cancel Order Structure::
      "timestamp": time
    }
 
-.. note:: A successful result from `cancel` API does not mean that order is cancelled, it just means that your cancellation request is accepted. To know the actual status, subscribe to `orderUpdate` channel on WebSocket.  
+.. note:: A successful result from `cancel` API does not mean that order is cancelled, it just means that your cancellation request is accepted. To know the actual status, subscribe to `orderUpdate` channel on WebSocket.
 
 ---------------
 Get Orders
@@ -1030,7 +1034,7 @@ Asset Withdrawal
 Fees
 **********
 We calculate fees as a fraction of the notional value of each trade (i.e., price × amount). Any fees will be applied at the time an order is placed. For partially filled orders, only the executed portion is subject to trading fees.
-Fees we charge for Maker trades is 0.10% while those for Taker trades is 0.15%. If any other users have joined by using your referral link, you gain 0.10% of the fees that we charge them on their trades. 
+Fees we charge for Maker trades is 0.10% while those for Taker trades is 0.15%. If any other users have joined by using your referral link, you gain 0.10% of the fees that we charge them on their trades.
 
 **********
 Disclaimer
