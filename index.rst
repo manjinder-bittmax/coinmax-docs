@@ -1,5 +1,5 @@
 .. Coinmax documentation master file, created by
-   sphinx-quickstart on Mon Sep 24 15:24:57 2018.
+   sphinx-quickAsteriskt on Mon Sep 24 15:24:57 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -10,17 +10,171 @@ Coinmax API Documentation
 .. toctree::
    :maxdepth: 2
 
-.. _api_credentials:
-
 
 *******************
 Rest API
 *******************
-You need to generate your API credentials before placing orders via API. Please follow the following steps for the same.
+
+Our API follows typical HTTP status codes for success and failure. Below is a table to indicate what each of them means.
+
+  .. list-table:: HTTP status codes
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Status code
+      - Description
+    * - 200
+      - Your request is accepted and body will have data if any
+    * - 400
+      - Invalid request 
+    * - 403
+      - Unauthorized request
+    * - 429
+      - API rate limit reached
+    * - 500
+      - Internal error
+
+|
+
+List of API endpoints
+
+  .. list-table:: API list
+    :widths: 15 15 15 15
+    :header-rows: 1
+
+    * - Endpoint
+      - HTTP method
+      - Authorization Required?
+      - Description
+    * - /public/products
+      - GET
+      - NO
+      - Get a list of available asset pairs for trading
+    * - /public/assets
+      - GET
+      - NO
+      - Get a list of supported assets
+    * - /client/order
+      - POST
+      - YES
+      - Place an order
+    * - /client/order/cancel
+      - POST
+      - YES
+      - Cancel an order
+    * - /client/orders
+      - GET
+      - YES
+      - Get your orders
+    * - /client/trades
+      - GET
+      - YES
+      - Get your trades
+    * - /client/funds
+      - GET
+      - YES
+      - Get available funds
+    * - /client/deposits
+      - GET
+      - YES
+      - Get your deposits
+    * - /client/withdrawals
+      - GET
+      - YES
+      - Get your withdrawals
+
+====================
+Public Endpoints
+====================
+
+You can get the listed products and assets list from our public endpoints.
+
+**Get Products**
+
+Get a list of available asset pairs for trading.
+
+HTTP REQUEST:
+
+GET **/public/products**
+
+Sample Response::
+
+    {
+      "BTC-AUD": {
+          "baseAsset": {
+              "assetDisplayName": "Bitcoin",
+              "assetName": "BTC",
+              "blockExplorer": "https://testnet.blockchain.info/tx/",
+              "depositServiceStatus": "SUSPENDED",
+              "minOrderQty": 1,
+              "precisionDigits": 8,
+              "precisionValue": 100000000,
+              "tickSize": 1,
+              "withdrawalServiceStatus": "RUNNING"
+          },
+          "quoteAsset": {
+              "assetDisplayName": "Australian Dollar",
+              "assetName": "AUD",
+              "blockExplorer": "",
+              "depositServiceStatus": "SUSPENDED",
+              "minOrderQty": 1,
+              "precisionDigits": 2,
+              "precisionValue": 100,
+              "tickSize": 1,
+              "withdrawalServiceStatus": "RUNNING"
+          },
+          "securityName": "BTC-AUD",
+          "splitter": "-",
+          "tradingServiceStatus": "RUNNING"
+        }
+    }
+
+|
+|
+**Get Assets**
+
+Get list of supported assets.
+
+.. note:: Not all assets may be currently in use for trading.
+HTTP REQUEST:
+
+GET **/public/assets**
+
+Sample Response::
+
+    {
+      "BTC": {
+            "assetDisplayName": "Bitcoin",
+            "assetName": "BTC",
+            "blockExplorer": "https://testnet.blockchain.info/tx/",
+            "depositServiceStatus": "SUSPENDED",
+            "minOrderQty": 1,
+            "precisionDigits": 8,
+            "precisionValue": 100000000,
+            "tickSize": 1,
+            "withdrawalServiceStatus": "RUNNING"
+        },
+        "LTC": {
+            "assetDisplayName": "Litecoin",
+            "assetName": "LTC",
+            "blockExplorer": "",
+            "depositServiceStatus": "SUSPENDED",
+            "minOrderQty": 1,
+            "precisionDigits": 6,
+            "precisionValue": 1000000,
+            "tickSize": 1,
+            "withdrawalServiceStatus": "RUNNING"
+      }
+    }
+
+
+.. _api_credentials:
 
 ====================
 Generate Credentials
 ====================
+
+You need to generate your API credentials before placing orders via API. Please follow the following steps for the same.
 
 1. Go to coinmax.com.au and login. If you don't have an account, please sign up.
 2. Once you log in, on the top right corner, click on the the dropdown and click "Settings".
@@ -28,11 +182,20 @@ Generate Credentials
 4. Click “Generate”.
 5. Note down the Client Key and Secret somewhere safe, as it will only be displayed once.
 
+===============
+Orders
+===============
+
 .. _place_order:
 
-=============
-Placing Order
-=============
+------------
+Place Order
+------------
+
+HTTP REQUEST:
+
+POST **/api/client/order**
+
 1. Create the order request with intended parameters. This will be the body of your HTTP request. Below are the details of each supported parameter.
 
    Order Structure::
@@ -52,7 +215,7 @@ Placing Order
 
 3. Set your API key in HTTP header "X-API-KEY".
 
-4. Place the request on URL https://coinmax.com.au/api/api-client/order
+4. Place the request on URL https://coinmax.com.au/api/client/order
 
    Sample NodeJS program::
 
@@ -77,7 +240,7 @@ Placing Order
        var request = require("request");
 
        var options = {
-         url: 'https://coinmax.com.au/api/api-client/order',
+         url: 'https://coinmax.com.au/api/client/order',
          headers: {
            'X-API-KEY': CLIENT_KEY,
            'X-API-SIGNATURE': sign
@@ -94,9 +257,14 @@ Placing Order
          console.log(body);
        })
 
-============
+-------------
 Cancel Order
-============
+-------------
+
+
+HTTP REQUEST:
+
+POST **/api/client/order/cancel**
 
 Follow the same steps as :ref:`place_order`, but alter the body with following parameters:
 
@@ -108,25 +276,296 @@ Cancel Order Structure::
      "timestamp": time
    }
 
-===========
-Client Data
-===========
+.. note:: A successful result from `cancel` API does not mean that order is cancelled, it just means that your cancellation request is accepted. To know the actual status, subscribe to `orderUpdate` channel on WebSocket.  
 
-1. You can fetch client data, [funds, orders, trades, deposits, withdrawals] using our API.
-2. These APIs use GET HTTP method
-3. You can use query params in URL, timestamp is a required parameter to prevent replay attacks.
-4. Similar to POST APIs, GET APIs of Coinmax also require signature, but the steps vary.
-5. You need to sign the API url instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://coinmax.com.au/api/api-client/trades?timestamp=12313443&page=0&symbol=ETH-AUD" "https://coinmax.com.au/api/api-client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=ETH-AUD" is the API URL.
-6. List of supported APIs is as below
- * https://coinmax.com.au/api/api-client/orders/
- * https://coinmax.com.au/api/api-client/trades/
- * https://coinmax.com.au/api/api-client/funds
- * https://coinmax.com.au/api/api-client/deposits
- * https://coinmax.com.au/api/api-client/withdrawals
+---------------
+Get Orders
+---------------
 
-Please note that orders and trades API also support filteration on "symbol" and also supports pagination too (page=0 and so on)
+HTTP REQUEST:
 
-Sample NodeJS program::
+GET **/api/client/orders**
+
+  .. list-table:: Query parameters
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Parameter
+      - Description
+    * - timestamp
+      - Current timestamp in milliseconds (Required)
+    * - symbol
+      - Asset pair e.g. BTC-AUD (Required)
+    * - pageSize
+      - Number of orders to return
+    * - page
+      - Directly jump to a particular page number by skipping previous records
+
+Sample Response::
+
+  [
+    {
+      "Symbol": "BTC-AUD",
+      "FilledQty": "0.00000000",
+      "Price": "1000.00",
+      "TriggerPrice": "0.00",
+      "Qty": "0.00010000",
+      "OrderType": "LIMIT",
+      "OrderValidity": "GOOD TILL CANCEL",
+      "OrderStatus": "CANCELLED",
+      "Side": "BUY",
+      "ExchangeOrderId": "391708",
+      "LastFillQty": "0.00000000",
+      "LastFillPrice": "0.00",
+      "Timestamp": "1561088065018000",
+      "Commission": "0.00",
+      "ClientOrderId": "391708",
+      "SeqNo": 2,
+      "Error": ""
+    }
+  ]
+
+:ref:`sample_get_program`
+
+==============
+Trades
+==============
+
+HTTP REQUEST:
+
+GET **/api/client/trades**
+
+  .. list-table:: Query parameters
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Parameter
+      - Description
+    * - timestamp
+      - Current timestamp in milliseconds (Required)
+    * - symbol
+      - Asset pair e.g. BTC-AUD (Required)
+    * - pageSize
+      - Number of trades to return
+    * - page
+      - Directly jump to a particular page number by skipping previous records
+
+Sample Response::
+
+    [
+      {
+        "Symbol": "BTC-AUD",
+        "FilledQty": "0.01086340",
+        "Price": "5616.89",
+        "TriggerPrice": "0.00",
+        "Qty": "1.00000000",
+        "OrderType": "LIMIT",
+        "OrderValidity": "GOOD TILL CANCEL",
+        "OrderStatus": "PARTIAL FILLED",
+        "Side": "BUY",
+        "ExchangeOrderId": "180708",
+        "ExecutionId": "4611686018427535980",
+        "LastFillQty": "0.01086340",
+        "LastFillPrice": "5616.89",
+        "Timestamp": "1557936662842695",
+        "Commission": "0.15",
+        "ClientOrderId": "180708",
+        "SeqNo": 2,
+        "Error": ""
+      }
+    ]
+
+:ref:`sample_get_program`
+
+==============
+Funds
+==============
+
+HTTP REQUEST:
+
+GET **/api/client/funds**
+
+  .. list-table:: Query parameters
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Parameter
+      - Description
+    * - timestamp
+      - Current timestamp in milliseconds (Required)
+
+
+Sample Response::
+
+    {
+      "funds": [
+        {
+          "assetName": "AUD",
+          "availableForOrders": "1000005.25",
+          "reserved": "-10253.65",
+          "pendingDeposits": "100.00",
+          "depositAddress": "",
+          "seqNo": 80
+        },
+        {
+          "assetName": "ZEC",
+          "availableForOrders": "100.000000",
+          "reserved": "0.000000",
+          "pendingDeposits": "0.000000",
+          "depositAddress": "tmYAfLpSziBirkKjNRuoS3mMENNuuTatrND",
+          "seqNo": 1
+        },
+        {
+          "assetName": "LTC",
+          "availableForOrders": "100.000000",
+          "reserved": "0.000000",
+          "pendingDeposits": "0.000000",
+          "depositAddress": "QV33qHRScoxKSyXojS8G7N8FkEHWnrf6Pd",
+          "seqNo": 1
+        },
+        {
+          "assetName": "ETH",
+          "availableForOrders": "159.981969",
+          "reserved": "0.000000",
+          "pendingDeposits": "0.000000",
+          "depositAddress": "QVt1ySHovNTGAh2cQCaG8QD6N535GyjG83",
+          "seqNo": 5
+        },
+        {
+          "assetName": "BTC",
+          "availableForOrders": "1.00000000",
+          "reserved": "0.00000000",
+          "pendingDeposits": "0.00000000",
+          "depositAddress": "2MvjxQopZU3z3TfexpWEEqT4Q9hbSQugsjs",
+          "seqNo": 1
+        }
+      ]
+    }
+
+:ref:`sample_get_program`
+
+==============
+Deposits
+==============
+
+HTTP REQUEST:
+
+GET **/api/client/deposits**
+
+  .. list-table:: Query parameters
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Parameter
+      - Description
+    * - timestamp
+      - Current timestamp in milliseconds (Required)
+    * - pageSize
+      - Number of trades to return
+    * - page
+      - Directly jump to a particular page number by skipping previous records
+
+Sample Response::
+
+    [
+      {
+        "asset": "AUD",
+        "paymentAgent": "Pay ID",
+        "amount": "5000.00",
+        "referenceId": "122692",
+        "timestamp": "1556291940840000",
+        "error": "",
+        "metadata": {
+          "code": "4cef02"
+        },
+        "feeCharged": "0.00",
+        "transactionStatus": "INITIATED"
+      },
+      {
+        "asset": "AUD",
+        "paymentAgent": "Pay ID",
+        "amount": "10.00",
+        "referenceId": "123692",
+        "timestamp": "1556291996905000",
+        "error": "",
+        "metadata": {
+          "code": "7cf4de"
+        },
+        "feeCharged": "0.00",
+        "transactionStatus": "INITIATED"
+      }
+    ]
+
+:ref:`sample_get_program`
+
+==============
+Withdrawals
+==============
+
+HTTP REQUEST:
+
+GET **/api/client/withdrawals**
+
+  .. list-table:: Query parameters
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Parameter
+      - Description
+    * - timestamp
+      - Current timestamp in milliseconds (Required)
+    * - pageSize
+      - Number of trades to return
+    * - page
+      - Directly jump to a particular page number by skipping previous records
+
+Sample Response::
+
+    [
+      {
+        "asset": "BTC",
+        "amount": "0.00300000",
+        "referenceId": "187698",
+        "timestamp": "1558023541957000",
+        "error": "",
+        "feeCharged": "0.00020000",
+        "transactionStatus": "CONFIRMED",
+        "nodeGeneratedTxId": "41f5bf416c601724351682e50bd324e46ec84567f0f0f93731ed8fc1c76e37fa",
+        "address": "2MvjxQopZU3z3TfexpWEEqT4Q9hbSQugsjs",
+        "recipientAddress": "2MvjxQopZU3z3TfexpWEEqT4Q9hbSQugsjs",
+        "approvedAmount": "0.00280000"
+      },
+      {
+        "asset": "ETH",
+        "amount": "0.045000",
+        "referenceId": "178703",
+        "timestamp": "1557937454067000",
+        "error": "",
+        "feeCharged": "0.001000",
+        "transactionStatus": "CONFIRMED",
+        "nodeGeneratedTxId": "0x75b7a8fb1bc8b0ec03404212de4d7913b45eb3859c0c3a334e81291c6aaab889",
+        "address": "0xf2af5b5ebcccade3461b654fd16c42c82408c0a5",
+        "recipientAddress": "0xf2af5b5ebcccade3461b654fd16c42c82408c0a5",
+        "approvedAmount": "0.044000"
+      }
+    ]
+
+:ref:`sample_get_program`
+
+.. _sample_get_program:
+
+==================
+Sample GET Program
+==================
+
+1. You can fetch funds, orders, trades, deposits, withdrawals using the GET APIs.
+2. You can use query params in URL, timestamp is a required parameter to prevent replay attacks.
+3. Similar to POST APIs, GET APIs of Coinmax also require signature, but the steps vary.
+4. You need to sign the API URL instead of request body, By API URL we mean the part ahead of the base url, For e.g, In "https://coinmax.com.au/api/client/trades?timestamp=12313443&page=0&symbol=ETH-AUD" "https://coinmax.com.au/api/client/" is the base URL and "/trades?timestamp=1540472319692&page=0&symbol=ETH-AUD" is the API URL.
+
+Below is a sample NodeJS program to fetch user trades, you can replace the `apiURL` as per your requirements.
+
+Sample NodeJS program to fetch trades::
 
    const crypto = require('crypto');
    let time = new Date().getTime();
@@ -134,7 +573,7 @@ Sample NodeJS program::
    const CLIENT_KEY = "a64cdc31716649d4c8fd79b89ab965d8";
    const CLIENT_SECRET = "d37e9c4f137601f2c59b796a033a99a35e20a6757e754f30d00cff9c438b0cac";
 
-   let baseURL = "https://coinmax.com.au/api/api-client"
+   let baseURL = "https://coinmax.com.au/api/client"
    let apiURL = `/trades?timestamp=${time}&page=0&symbol=ETH-AUD`;
    let reqURl = `${baseURL}${apiURL}`;
 
@@ -254,7 +693,7 @@ Subscriptions reply format::
 **Subscribe to events**
 
    To Subscibe to an event, send a message to WebSocket with ``action: subscribe`` and the channel and product id you want to subscribe for.
-   A complete list of :ref:`market_channels`, :ref:`authorized_channels` and :ref:`supported_product_ids` is listed below.
+   A complete list of :ref:`market_channels`, :ref:`authorized_channels` is listed below.
 
 **Unsubscribe from events**
 
@@ -274,30 +713,28 @@ Market Data Channels
 
       * - Data
         - Channel Name
-        - Supported Product Ids
+        - Supported Product IDs
       * - OHLC
         - ohlc
-        - All supported Ids
+        - All supported IDs
       * - 24H Changes
         - ticker
-        - \* *Star*
+        - \* *Asterisk*
       * - Market trades
         - tradeQuote
-        - All supported Ids
+        - All supported IDs
       * - Depth Snapshot
         - quoteFullSnapshot
-        - All supported Ids
+        - All supported IDs
       * - Depth Incremental updates
         - quoteIncremental
-        - All supported Ids
+        - All supported IDs
 
 .. _authorized_channels:
 
 -------------------------------
 Authorized Client Data Channels
 -------------------------------
-
-   .. important:: Before subscribing to any authorized channel, You must ``register`` your Authorization token, see :ref:`ws-registration`.
 
    Following channels are available to listen for real time updates.
 
@@ -307,51 +744,16 @@ Authorized Client Data Channels
 
       * - Data
         - Channel Name
-        - Supported Product Ids
+        - Supported Product IDs
       * - Order Update
         - orderUpdate
-        - All supported Ids
+        - All supported IDs
       * - Asset Deposits
         - deposit
-        - \* *Star*
+        - \* *Asterisk*
       * - Asset Withdrawals
         - withdrawal
-        - \* *Star*
-
-.. _supported_product_ids:
-
----------------------
-Supported Product Ids
----------------------
-
-.. list-table::
-   :widths: 30
-   :header-rows: 1
-
-   * - Product Id
-   * - ETH-AUD
-   * - ZEC-AUD
-
-
-.. _ws-registration:
-
-============
-Registration
-============
-
-   Registration message format::
-
-      {
-         "action" : "register",
-         "token": "<Your Bearer token here>"
-      }
-
-   Registration reply format::
-
-     {
-         "Type": "registration",
-         "status": "Registered|Token Invalid"
-     }
+        - \* *Asterisk*
 
 ===============
 Data Structures
@@ -372,7 +774,7 @@ OHLC
       "Candles":
       [
          {
-            "Start": Epoch,
+            "Asteriskt": Epoch,
             "Interval": Interval in seconds,
             "O": string,
             "H": string,
@@ -432,23 +834,25 @@ Depth Book
    Full Snapshot::
 
       {
-         "Type": "quoteFullSnapshot",
-         "Symbol": string,
-         "NoOfBuyLevels": Number,
-         "Buys": {
-            "Price": {
-                  "AggrQty": string,
-                  "OrderCount": Number
-               },...
-         },
-         "NoOfSellLevels": Number,
-         "Sells": {
-            "Price": {
-                  "AggrQty": string,
-                  "OrderCount": Number
-               },...
-         },
-         "SeqNo": Number
+        "Type": "quoteFullSnapshot",
+        "Symbol": "string",
+        "NoOfBuyLevels": "Number",
+        "Buys": [
+          {
+            "Price": "5741.83",
+            "AggrQty": "0.00000993",
+            "OrderCount": 1
+          }
+        ],
+        "NoOfSellLevels": "Number",
+        "Sells": [
+          {
+            "Price": "6561.54",
+            "AggrQty": "0.00013083",
+            "OrderCount": 1
+          }
+        ],
+        "SeqNo": "Number"
       }
 
    .. note:: Buys and Sells are maps with Price as Key and {AggrQty and OrderCount} Object as value
