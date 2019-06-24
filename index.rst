@@ -26,7 +26,7 @@ Our API follows typical HTTP status codes for success and failure. Below is a ta
     * - 200
       - Your request is accepted and body will have data if any
     * - 400
-      - Invalid request
+      - Invalid request 
     * - 403
       - Unauthorized request
     * - 429
@@ -99,7 +99,7 @@ Get a list of available asset pairs for trading.
 
 HTTP REQUEST:
 
-GET **/api/public/products**
+GET **/public/products**
 
 Sample Response::
 
@@ -142,7 +142,7 @@ Get list of supported assets.
 .. note:: Not all assets may be currently in use for trading.
 HTTP REQUEST:
 
-GET **/api/public/assets**
+GET **/public/assets**
 
 Sample Response::
 
@@ -280,7 +280,7 @@ Cancel Order Structure::
      "timestamp": time
    }
 
-.. note:: A successful result from `cancel` API does not mean that order is cancelled, it just means that your cancellation request is accepted. To know the actual status, subscribe to `orderUpdate` channel on WebSocket.
+.. note:: A successful result from `cancel` API does not mean that order is cancelled, it just means that your cancellation request is accepted. To know the actual status, subscribe to `orderUpdate` channel on WebSocket.  
 
 ---------------
 Get Orders
@@ -668,7 +668,7 @@ Subscriptions request format::
          "productIds": ["ETH-AUD"]
       },
       {
-         "name": "trades"
+         "name": "quoteIncremental"
       }],
       "productIds": ["ZEC-AUD"]
    }
@@ -686,11 +686,15 @@ Subscriptions reply format::
             "productIds": ["ETH-AUD", "ZEC-AUD"]
          },
          {
-            "name": "trades",
+            "name": "quoteIncremental",
             "productIds": ["ZEC-AUD"]
          }
       ]
    }
+
+Subscriptions response includes a `subscribe` field which will be either **ok** or **fail**. It will fail if your request is invalid. An invalid request means you either sent an empty request or all channels in your request were invalid, check `reason` field for more details. If any channel in the request is valid `subscribe` field will be **ok**.
+
+Response will also include a `subscriptions` array which includes responses to each valid channel. If you try to register to an invalid channel, subscriptions array will not include it in the response as we don't entertain invalid requests. But if for some reason your subscription request for a valid channel fails, there will be a entry for it in the subscription array with error `code` and `description`.
 
 .. hint:: Every message you will receive from WebSocket will include a **Type** field, You can use it to decide what actions to perform
 
@@ -757,6 +761,9 @@ Authorized Client Data Channels
         - \* *Asterisk*
       * - Asset Withdrawals
         - withdrawal
+        - \* *Asterisk*
+      * - Cash Components
+        - funds
         - \* *Asterisk*
 
 ===============
@@ -911,25 +918,29 @@ Depth Book
 Authorized Client Data
 ----------------------
 
-.. _CashComponent:
-
 ^^^^^^^^^^^^^^
 Cash Component
 ^^^^^^^^^^^^^^
 
  ::
 
-   {
-      "Asset": string,
-      "AvailableUnits": string,
-      "PendingUnits": string
-   }
+     {
+        "Type": "funds",
+        "CashComponents": [{
+            "Asset": string,
+            "AvailableUnits": string,
+            "PendingUnits": string,
+            "SeqNo": uint32
+          }
+        }]
+     }
 
 ^^^^^^^^^^^^
 Order Update
 ^^^^^^^^^^^^
 
- .. parsed-literal::
+ ::
+
      {
          "Type": "orderUpdate",
          "Symbol": string,
@@ -947,8 +958,6 @@ Order Update
          "LastFillPrice": string,
          "Timestamp": string,
          "Commission": string,
-         "Credited": :ref:`CashComponent`,
-         "Debited": :ref:`CashComponent`,
          "Error": string
      }
 
@@ -974,7 +983,6 @@ Order Update
  **Important notes**
     * You may receive ``PARTIAL_FILLED`` events multiple times
     * ``Error`` field will not be available for ``PARTIAL_FILLED`` and ``FILLED`` orders
-    * Credited and Debited :ref:`CashComponent` may be nil in some events
     * ``ExecutionId`` will be only available for ``PARTIAL_FILLED`` and ``FILLED`` orders
 
  .. hint:: ``ExecutionId`` + ``ExchangeOrderId`` = ``Unique Trade Identifier``
@@ -983,7 +991,7 @@ Order Update
 Asset Deposit
 ^^^^^^^^^^^^^
 
-.. parsed-literal::
+::
 
       {
          "Type": "deposit",
@@ -993,8 +1001,12 @@ Asset Deposit
          "TxId": string,
          "NodeTxId": string,
          "Timestamp": string,
-         "Credited": :ref:`CashComponent`,
-         "ErrorCode": Number
+         "Fee": string,
+         "Error": string,
+         "PaymentAgent": "string",
+         "Metadata": {
+            "code": string
+          }
       }
 
 
@@ -1006,7 +1018,7 @@ Asset Deposit
 Asset Withdrawal
 ^^^^^^^^^^^^^^^^^
 
-.. parsed-literal::
+::
 
       {
         "Type": "withdrawal",
@@ -1020,8 +1032,7 @@ Asset Withdrawal
       	"NodeTxId": string,
       	"Timestamp": string,
       	"Recipient": string,
-      	"Debited": :ref:`CashComponent`,
-      	"ErrorCode": Number
+      	"Error": string
       }
 
 
@@ -1034,7 +1045,7 @@ Asset Withdrawal
 Fees
 **********
 We calculate fees as a fraction of the notional value of each trade (i.e., price × amount). Any fees will be applied at the time an order is placed. For partially filled orders, only the executed portion is subject to trading fees.
-Fees we charge for Maker trades is 0.10% while those for Taker trades is 0.15%. If any other users have joined by using your referral link, you gain 0.10% of the fees that we charge them on their trades.
+Fees we charge for Maker trades is 0.10% while those for Taker trades is 0.15%. If any other users have joined by using your referral link, you gain 0.10% of the fees that we charge them on their trades. 
 
 **********
 Disclaimer
