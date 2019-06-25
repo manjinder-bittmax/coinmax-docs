@@ -962,7 +962,7 @@ Order Update
          "Timestamp": string,
          "Commission": string,
          "ClientOrderId": string,
-	       "SeqNo": uint32,
+         "SeqNo": uint32,
          "Error": string
      }
 
