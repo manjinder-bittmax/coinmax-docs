@@ -86,6 +86,10 @@ List of API endpoints
       - GET
       - YES
       - Get your withdrawals
+    * - /client/withdraw
+      - POST
+      - YES
+      - Place a withdrawal
 
 ====================
 Public Endpoints
@@ -135,6 +139,7 @@ Sample Response::
 
 |
 |
+
 **Get Assets**
 
 Get list of supported assets.
@@ -556,6 +561,38 @@ Sample Response::
 
 :ref:`sample_get_program`
 
+
+POST **/api/client/withdraw**
+
+  .. list-table:: Body params
+    :widths: 15 15
+    :header-rows: 1
+
+    * - Parameter
+      - Description
+    * - asset
+      - One of the listed asset's name (Required)
+    * - amount
+      - Amount that you want to withdraw from your account (required)
+    * - recipient
+      - Valid address for the recipient of this transaction (required)
+    * - timestamp
+      - Current timestamp in milliseconds (Required)
+
+Sample Request::
+
+    {
+      "asset": "BTC",
+      "recipient": "2NGZrVvZG92qGYqzTLjCAewvPZ7JE8S8VxE",
+      "amount": "0.001",
+      "timestamp": time
+    }
+
+.. note:: This api is available for crypto withdrawals and whitelisted recipient addresses only. Moreover, make sure that your api key has the required provisions to use this functionality.
+.. note:: As of now users can neither white list withdrawal addresses nor can they update ApiKey provisions by themselves. Kindly contact support if you need to do so.
+
+:ref:`sample_get_program`
+
 .. _sample_get_program:
 
 ==================
@@ -839,7 +876,7 @@ Market Trades
    "Timestamp": string
   }
 
- .. note:: Possbile values for Taker are ``maker`` and ``taker``
+ .. note:: Possible values for Taker field are ``maker`` and ``taker``
 
 ^^^^^^^^^^
 Depth Book
@@ -866,7 +903,8 @@ Depth Book
             "OrderCount": 1
           }
         ],
-        "SeqNo": "Number"
+        "SeqNo": "Number",
+        "Timestamp": "Number"
       }
 
    .. note:: Buys and Sells are maps with Price as Key and {AggrQty and OrderCount} Object as value
@@ -882,6 +920,7 @@ Depth Book
          "AggrQty": string,
          "OrderCount": Number,
          "Action": Number
+         "Timestamp" : Number
       }
 
 
@@ -966,24 +1005,24 @@ Order Update
          "Error": string
      }
 
- .. list-table:: Possbile values for OrderStatus::
-   :widths:15 15
+ .. list-table:: Possiblele values for OrderStatus
+   :widths: 15 15
    :header-rows: 1
 
    * - Status
-   - Description
+     - Description
    * - CANCELLED
-   - Your order was cancelled, Check ``Error`` for more details
+     - Your order was cancelled, Check ``Error`` for more details
    * - REJECTED
-   - Order was rejected, Check ``Error`` for more details
+     - Order was rejected, Check ``Error`` for more details
    * - ACCEPTED
-   - Your order is accepted by Exchange
+     - Your order is accepted by Exchange
    * - PARTIAL_FILLED
-   - Your order was filled partially, ``LastFillQty`` and ``LastFillPrice`` will contain the Quantity Filled and at what Price for this trade
+     - Your order was filled partially, ``LastFillQty`` and ``LastFillPrice`` will contain the Quantity Filled and at what Price for this trade
    * - FILLED
-   - Your order is completely filled
+     - Your order is completely filled
    * - CANCEL_REJECTED
-   - Your request for cancelling your order was rejected, Check ``Error`` for more details
+     - Your request for cancelling your order was rejected, Check ``Error`` for more details
 
  **Important notes**
     * You may receive ``PARTIAL_FILLED`` events multiple times
@@ -1044,6 +1083,30 @@ Asset Withdrawal
 .. hint:: You can use ``NodeTxId`` to view the transaction on block expolorer.
 
 .. note:: Use the ``ReferenceId`` to uniquely identify withdrawal request.
+
+**********
+Api Keys
+**********
+Every generated api key has provisions attached to it, based on whom you may be allowed to access a service or not. 
+Following are the service types and provisions available for a key as of now.
+
+    .. list-table:: Api Key Services & Provisions
+      :widths: 15 15
+      :header-rows: 1
+
+      * - Service Name
+        - Provision Type
+      * - Trading
+        - ENABLED(default) / DISABLED
+      * - Withdrawal
+        - ENABLED / DISABLED(default)
+
+Please contact support if you want to change them.
+      
+
+.. Trading: Allowed/Disallowed
+.. Withdrawal: Allowed/Disallowed
+
 
 
 **********
