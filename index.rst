@@ -595,6 +595,8 @@ Sample Request::
 .. note:: This api is available for crypto withdrawals and whitelisted recipient addresses only. Moreover, make sure that your api key has the required provisions to use this functionality.
 .. note:: As of now users can neither white list withdrawal addresses nor can they update ApiKey provisions by themselves. Kindly contact support if you need to do so.
 
+:ref:`api_key_info`
+
 :ref:`sample_get_program`
 
 .. _sample_get_program:
@@ -1088,9 +1090,11 @@ Asset Withdrawal
 
 .. note:: Use the ``ReferenceId`` to uniquely identify withdrawal request.
 
-**********
+.. _api_key_info:
+
+********
 Api Keys
-**********
+********
 Every generated api key has provisions attached to it, based on whom you may be allowed to access a service or not. 
 Following are the service types and provisions available for a key as of now.
 
